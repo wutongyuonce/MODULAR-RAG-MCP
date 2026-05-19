@@ -1,0 +1,145 @@
+# Modular RAG MCP Server - Configuration
+# This is the main configuration file for the MCP Server.
+# Edit this file to configure LLM, Embedding, VectorStore, and other services.
+
+# =============================================================================
+# LLM Configuration
+# =============================================================================
+# llm:
+#   provider: "openai"  # Options: openai, azure, ollama, deepseek
+#   model: "gpt-4o"
+#   deployment_name: "gpt-4o"
+#   azure_endpoint: "https://YOUR_ENDPOINT.openai.azure.com/"
+#   api_version: "2024-02-15-preview"
+#   api_key: "YOUR_API_KEY_HERE"
+#   temperature: 0.0
+#   max_tokens: 4096
+llm:
+  provider: "deepseek"
+  model: "deepseek-v4-pro"
+  api_key: "sk-d474bba522d148e1b68dad3d46c6cd67"
+  temperature: 0.0
+  max_tokens: 4096
+  # BASE_URL 固定写在 deepeseek_llm.py 里了
+# =============================================================================
+# Embedding Configuration
+# =============================================================================
+# embedding:
+#   provider: "openai"  # Options: openai, azure, ollama
+#   model: "text-embedding-ada-002"
+#   dimensions: 1536  # text-embedding-ada-002 固定维度 (不传递给API, 仅用于验证)
+#   # Azure-compatible settings (azure_endpoint triggers Azure compat mode):
+#   azure_endpoint: "https://YOUR_ENDPOINT.openai.azure.com/"
+#   deployment_name: "text-embedding-ada-002"
+#   api_version: "2024-02-15-preview"
+#   api_key: "YOUR_API_KEY_HERE"
+#   # OpenAI-specific settings (if provider is openai):
+#   # api_key: "YOUR_API_KEY_HERE"
+embedding:
+  provider: "openai"
+  model: "text-embedding-v4"
+  dimensions: 1024
+  api_key: "sk-a434ac35ffd241fcb3a3bd6ef0498179"
+  base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+
+# =============================================================================
+# Vision LLM Configuration (for Image Captioning)
+# =============================================================================
+# vision_llm:
+#   enabled: true  # Set to true to enable vision capabilities
+#   provider: "openai"  # Options: openai, azure, ollama
+#   model: "gpt-4o"  # Options: gpt-4o, gpt-4-vision-preview (OpenAI), llava (Ollama)
+#   # Azure-compatible settings (azure_endpoint triggers Azure compat mode):
+#   azure_endpoint: "https://YOUR_ENDPOINT.openai.azure.com/"
+#   deployment_name: "gpt-4o"
+#   api_version: "2024-02-15-preview"
+#   api_key: "YOUR_API_KEY_HERE"
+#   # Ollama-specific settings (if provider is ollama):
+#   # base_url: "http://localhost:11434"
+#   max_image_size: 2048  # Max dimension (width/height) for image compression
+vision_llm:
+  enabled: true
+  provider: "openai"
+  model: "gpt-4.1"
+  api_key: "sk-aDd3lFBkE0zaK7Yeao3xTkkscfh2gPuIFprXTXMNWv5JiRtO"
+  base_url: "https://www.packyapi.com/v1"
+  max_image_size: 2048
+
+# =============================================================================
+# Vector Store Configuration
+# =============================================================================
+vector_store:
+  provider: "chroma"  # Options: chroma, qdrant, pinecone
+  persist_directory: "./data/db/chroma"
+  collection_name: "knowledge_hub"
+
+# =============================================================================
+# Retrieval Configuration
+# =============================================================================
+retrieval:
+  dense_top_k: 20
+  sparse_top_k: 20
+  fusion_top_k: 10
+  rrf_k: 60  # RRF constant
+  query_orchestration:
+    enabled: true
+    planner_provider: "llm"  # Options: llm, rules
+    mode: "synonym"  # Options: off, auto, synonym, decomposition
+    max_sub_queries: 4
+    parallel_sub_queries: true
+    merge_fusion: "rrf"  # Options: rrf, weighted_rrf
+    fallback_to_direct: true
+    planner_timeout_seconds: 8.0
+
+# =============================================================================
+# Rerank Configuration
+# =============================================================================
+# rerank:
+#   enabled: false
+#   provider: "none"  # Options: none, cross_encoder, llm
+#   model: "cross-encoder/ms-marco-MiniLM-L-6-v2"  # cross_encoder: Hugging Face model name or local model path
+#   top_k: 5
+rerank:
+  enabled: true
+  provider: "llm"
+  model: "deepseek-v4-pro"   # 这里可以写，但当前实现里不会真正决定 llm rerank 用什么模型
+  top_k: 5
+
+# =============================================================================
+# Evaluation Configuration
+# =============================================================================
+evaluation:
+  enabled: false
+  provider: "custom"  # Options: custom, ragas
+  metrics:
+    - "hit_rate"      # custom supports: hit_rate, mrr
+    - "mrr"
+    # ragas supports: faithfulness, answer_relevancy, context_precision
+
+# =============================================================================
+# Observability Configuration
+# =============================================================================
+observability:
+  log_level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR
+  trace_enabled: true
+  trace_file: "./logs/traces.jsonl"
+  structured_logging: true
+
+# =============================================================================
+# Ingestion Configuration
+# =============================================================================
+ingestion:
+  chunk_size: 1000
+  chunk_overlap: 200
+  splitter: "recursive"  # Options: recursive, semantic, fixed_length
+  batch_size: 100
+  
+  # Chunk Refiner Configuration (C5)
+  chunk_refiner:
+    use_llm: true  # Set to true to enable LLM-based refinement (requires LLM config)
+    # When use_llm is false or LLM call fails, falls back to rule-based refinement
+  
+  # Metadata Enricher Configuration (C6)
+  metadata_enricher:
+    use_llm: true  # Set to true to enable LLM-based enrichment (requires LLM config)
+    # When use_llm is false or LLM call fails, falls back to rule-based enrichment
