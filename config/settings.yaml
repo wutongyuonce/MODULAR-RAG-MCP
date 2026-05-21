@@ -16,7 +16,7 @@
 #   max_tokens: 4096
 llm:
   provider: "deepseek"
-  model: "deepseek-v4-pro"
+  model: "deepseek-v4-flash"
   api_key: "sk-d474bba522d148e1b68dad3d46c6cd67"
   temperature: 0.0
   max_tokens: 4096

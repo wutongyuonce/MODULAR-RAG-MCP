@@ -96,6 +96,8 @@ Agent 会自动引导你完成全部配置流程。
 
 ```bash
 .venv/bin/python -m streamlit run src/observability/dashboard/app.py --server.port 8501
+# 或
+uv run streamlit run src/observability/dashboard/app.py --server.port 8501
 ```
 
 启动后访问 [http://localhost:8501](http://localhost:8501) 即可使用。
