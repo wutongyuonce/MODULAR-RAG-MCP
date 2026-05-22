@@ -61,6 +61,7 @@ venv.bak/
 
 # QA Test credentials and config backups
 config/test_credentials.yaml
+config/settings.yaml
 config/settings.yaml.qa_backup
 config/settings.yaml.bak
 

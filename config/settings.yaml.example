@@ -1,0 +1,103 @@
+# Modular RAG MCP Server - Configuration Template
+# This is a template for the main configuration file.
+# Copy this file to 'settings.yaml' and edit it to configure your services.
+
+# =============================================================================
+# LLM Configuration
+# =============================================================================
+llm:
+  provider: "openai"  # Options: openai, azure, ollama, deepseek
+  model: "gpt-4o"
+  api_key: "YOUR_API_KEY_HERE"
+  temperature: 0.0
+  max_tokens: 4096
+  # base_url: "https://api.openai.com/v1"  # Optional: for custom endpoints
+
+# =============================================================================
+# Embedding Configuration
+# =============================================================================
+embedding:
+  provider: "openai"  # Options: openai, azure, ollama
+  model: "text-embedding-3-small"
+  dimensions: 1536
+  api_key: "YOUR_API_KEY_HERE"
+  # base_url: "https://api.openai.com/v1"  # Optional: for custom endpoints
+
+# =============================================================================
+# Vision LLM Configuration (for Image Captioning)
+# =============================================================================
+vision_llm:
+  enabled: true
+  provider: "openai"
+  model: "gpt-4o"
+  api_key: "YOUR_API_KEY_HERE"
+  max_image_size: 2048
+
+# =============================================================================
+# Vector Store Configuration
+# =============================================================================
+vector_store:
+  provider: "chroma"  # Options: chroma, qdrant, pinecone
+  persist_directory: "./data/db/chroma"
+  collection_name: "knowledge_hub"
+
+# =============================================================================
+# Retrieval Configuration
+# =============================================================================
+retrieval:
+  dense_top_k: 20
+  sparse_top_k: 20
+  fusion_top_k: 10
+  rrf_k: 60
+  query_orchestration:
+    enabled: true
+    planner_provider: "llm"
+    mode: "synonym"
+    max_sub_queries: 4
+    parallel_sub_queries: true
+    merge_fusion: "rrf"
+    fallback_to_direct: true
+    planner_timeout_seconds: 8.0
+
+# =============================================================================
+# Rerank Configuration
+# =============================================================================
+rerank:
+  enabled: true
+  provider: "llm"
+  model: "gpt-4o"
+  top_k: 5
+
+# =============================================================================
+# Evaluation Configuration
+# =============================================================================
+evaluation:
+  enabled: false
+  provider: "custom"
+  metrics:
+    - "hit_rate"
+    - "mrr"
+
+# =============================================================================
+# Observability Configuration
+# =============================================================================
+observability:
+  log_level: "INFO"
+  trace_enabled: true
+  trace_file: "./logs/traces.jsonl"
+  structured_logging: true
+
+# =============================================================================
+# Ingestion Configuration
+# =============================================================================
+ingestion:
+  chunk_size: 1000
+  chunk_overlap: 200
+  splitter: "recursive"
+  batch_size: 100
+  
+  chunk_refiner:
+    use_llm: true
+  
+  metadata_enricher:
+    use_llm: true
